@@ -7,9 +7,12 @@ const userRoutes = require('./routes/user.route');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 
 const app = express();
+const FRONTEND_URL = process.env.FRONTEND_URL
+
+console.log(FRONTEND_URL, 'FRONTEND_URL')
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: FRONTEND_URL,
     credentials: true,
 }
 
