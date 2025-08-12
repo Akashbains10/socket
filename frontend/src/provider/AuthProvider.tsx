@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { TRegisterDTO } from "@/types/register";
 import Axios from "@/utils/axios";
 import { LoginFormValues } from '@/pages/auth/components/Login';
 import { getLogInUser } from '@/api/auth/getLogInUser';

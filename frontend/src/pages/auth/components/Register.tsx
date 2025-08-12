@@ -3,11 +3,13 @@ import Form from '@/ui/Form';
 import { useHookForm } from '@/hooks/useHookForm';
 import Input from '@/ui/Input';
 import Button from '@/ui/Button';
-import { useRegisterMutate } from '@/api/auth/registerUser';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { decrement, increment } from '@/store/counterSlice';
 import { RootState } from '@/store/store';
+import { useState } from 'react';
+import { registerUser } from '@/api/auth/registerUser';
+import toast from 'react-hot-toast';
 
 
 const schema = z.object({
@@ -51,26 +53,29 @@ const inputStyles = {
 const Register = () => {
 
   const navigate = useNavigate();
-  const { mutate: registerMutate, isPending } = useRegisterMutate();
   const { methods } = useHookForm(schema);
   const { formState, control } = methods;
+  const [loading, setLoading] = useState<boolean>(false);
 
   // react  redux toolkit example
 
-  const count = useSelector((state: RootState)=> state.counter.count);
+  const count = useSelector((state: RootState) => state.counter.count);
   const dispatch = useDispatch();
 
 
-  const onSubmit = (values: z.infer<typeof schema>) => {
-    registerMutate(values, {
-      onSuccess: () => {
-        console.log('Form submitted with values:', values);
+  const onSubmit = async (values: z.infer<typeof schema>) => {
+    try {
+      setLoading(true);
+      const res = await registerUser(values);
+      if (res?.data) {
+        toast.success('User registered successfully');
         navigate('/auth/login')
-      },
-      onError: (err) => {
-        console.log('Err in register:', err)
       }
-    })
+    } catch (error) {
+      console.log('Error in register', error)
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -124,15 +129,15 @@ const Register = () => {
           <div className="my-5">
             <Button
               type="submit"
-              loading={isPending}
+              loading={loading}
             >
-              {isPending ? 'Signing up...' : 'Sign up'}
+              {loading ? 'Signing up...' : 'Sign up'}
             </Button>
           </div>
           <div className="my-5">
             <Button
               type="submit"
-              onClick={()=> dispatch(increment())}
+              onClick={() => dispatch(increment())}
             >
               Increment (+)
             </Button>
@@ -140,7 +145,7 @@ const Register = () => {
           <div className="my-5">
             <Button
               type="submit"
-              onClick={()=> dispatch(decrement())}
+              onClick={() => dispatch(decrement())}
             >
               Decrement (-)
             </Button>

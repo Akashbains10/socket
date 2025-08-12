@@ -24,7 +24,7 @@ export const routesGroups = [
         layout: HomeLayout,
         routes: [
             {
-                path: '',
+                path: '/',
                 element: <Chat />
             }
         ]
