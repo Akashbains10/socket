@@ -1,4 +1,4 @@
-import ChatLeftSidebar from "./ChatLeftSidebar"
+import ChatLeftSidebar from "./leftsidebar/ChatLeftSidebar"
 import ChatMainContent from "./ChatMainContent"
 
 const Chat = () => {
