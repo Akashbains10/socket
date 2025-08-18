@@ -1,7 +1,15 @@
+import ChatHeader from "./rightContent/ChatHeader"
+import MessageArea from "./rightContent/MessageArea"
+import MessageInput from "./rightContent/MessageInput"
+
 const ChatMainContent = () => {
   return (
-    <div className="flex-1 border border-amber-950">
-      Chat Main content area
+    <div className="h-screen flex-1">
+      <div className="h-full flex flex-col justify-between">
+        <ChatHeader />
+        <MessageArea/>
+        <MessageInput />
+      </div>
     </div>
   )
 }

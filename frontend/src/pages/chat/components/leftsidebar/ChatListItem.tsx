@@ -1,5 +1,5 @@
 import Avatar from "@mui/material/Avatar";
-import { deepOrange } from "@mui/material/colors";
+import { indigo } from "@mui/material/colors";
 import { TChats } from "./ChatList";
 
 type ChatListItemProps = TChats & {
@@ -20,7 +20,7 @@ const ChatListItem = ({
     >
       <div className="flex items-center gap-4">
         <Avatar
-          sx={{ bgcolor: deepOrange[500], width: 48, height: 48 }}
+          sx={{ bgcolor: indigo['A200'], width: 48, height: 48 }}
           variant="rounded"
         >
           {name.charAt(0)}

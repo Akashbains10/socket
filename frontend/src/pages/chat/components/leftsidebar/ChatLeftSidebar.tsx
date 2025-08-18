@@ -3,16 +3,24 @@ import { MessageSquarePlus, Settings, LogOut } from "lucide-react";
 import SearchBar from "./SearchBar";
 import SidebarFooter from "./SidebarFooter";
 import SidebarHeader from "./SidebarHeader";
-import ChatList, { TChats } from "./ChatList";
+import ChatList from "./ChatList";
 
 
-// const mockChats = [
-//   { name: "Akash Bains", time: "2:45 PM", message: "Hey! How are you?", unreadCount: 1 },
-//   { name: "John Doe", time: "1:15 PM", message: "Let's meet tomorrow", unreadCount: 0 },
-//   { name: "Jane Smith", time: "Yesterday", message: "Thanks for the update", unreadCount: 2 }
-// ];
+const mockChats = [
+  { name: "Akash Bains", time: "2:45 PM", message: "Hey! How are you?", unreadCount: 1 },
+  { name: "John Doe", time: "1:15 PM", message: "Let's meet tomorrow", unreadCount: 0 },
+  { name: "Jane Smith", time: "Yesterday", message: "Thanks for the update", unreadCount: 2 }
+];
 
-const mockChats: TChats[] = []
+const newChats = [
+  { name: "Roman Reigns", time: "2:45 PM", message: "Tap here to start chat", unreadCount: 0 },
+  { name: "Seth Rollins", time: "1:15 PM", message: "Tap here to start chat", unreadCount: 0 },
+  { name: "Randy Orton", time: "Yesterday", message: "Tap here to start chat", unreadCount: 0 }
+];
+
+
+
+// const mockChats: TChats[] = []
 
 const ChatLeftSidebar = () => {
   const [search, setSearch] = useState<string>("");
@@ -20,7 +28,7 @@ const ChatLeftSidebar = () => {
 
 
   return (
-    <div className="w-1/4 bg-gray-100 flex flex-col">
+    <div className="w-1/4 bg-gray-100 flex flex-col border-gray-300 shadow-md">
       <SidebarHeader
         title={isNewChat ? 'New Chat' : 'Chats'}
         actionIcon={<MessageSquarePlus size={20} />}
@@ -33,7 +41,7 @@ const ChatLeftSidebar = () => {
         </div>
       </div>
 
-      <ChatList chatLists={mockChats} />
+      <ChatList chatLists={isNewChat ? newChats : mockChats} />
 
       <SidebarFooter
         actions={[

@@ -10,7 +10,7 @@ const SidebarHeader = ({ title, onActionClick, actionIcon }: SidebarHeaderProps)
       <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
       {actionIcon && (
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-md transition-colors"
+          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-md cursor-pointer transition-colors"
           onClick={onActionClick}
         >
           {actionIcon}
