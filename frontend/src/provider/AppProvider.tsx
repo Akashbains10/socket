@@ -33,7 +33,7 @@ const AppProvider = ({
                             {children}
                         </AuthProvider>
                     </BrowserRouter>
-                    {/* <ReactQueryDevtools /> */}
+                    <ReactQueryDevtools />
                 </QueryClientProvider>
             </ErrorBoundary>
         </Suspense>

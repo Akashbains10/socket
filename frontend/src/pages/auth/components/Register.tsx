@@ -80,7 +80,7 @@ const Register = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-2xl font-semibold text-gray-800">Welcome back {count}</h3>
+      <h3 className="text-2xl font-semibold text-gray-800">Welcome back</h3>
       <p className="text-gray-500 text-sm font-medium mt-1">Please enter your details to sign up</p>
       <div className="w-full mt-5">
         <Form<FormValues>

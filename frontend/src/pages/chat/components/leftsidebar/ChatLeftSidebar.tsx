@@ -4,6 +4,7 @@ import SearchBar from "./SearchBar";
 import SidebarFooter from "./SidebarFooter";
 import SidebarHeader from "./SidebarHeader";
 import ChatList from "./ChatList";
+import UsersList from "./UsersList";
 
 
 const mockChats = [
@@ -27,6 +28,7 @@ const ChatLeftSidebar = () => {
   const [isNewChat, setIsNewChat] = useState<boolean>(false);
 
 
+
   return (
     <div className="w-1/4 bg-gray-100 flex flex-col border-gray-300 shadow-md">
       <SidebarHeader
@@ -41,7 +43,7 @@ const ChatLeftSidebar = () => {
         </div>
       </div>
 
-      <ChatList chatLists={isNewChat ? newChats : mockChats} />
+      {isNewChat ? <UsersList /> : <ChatList chatLists={mockChats} />}
 
       <SidebarFooter
         actions={[
