@@ -8,7 +8,7 @@ const socketController = require('./controllers/socket.controller');
                 methods: ['GET', 'POST'],
                 credentials: true
             }
-        })
+        });
 
         io.use(socketController.authenticateConnection);
 

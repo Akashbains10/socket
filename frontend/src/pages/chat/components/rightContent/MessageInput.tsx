@@ -1,13 +1,27 @@
 import { Image, Smile, MapPin, Mic } from "lucide-react";
 import { useState } from "react";
 import { ArrowUpCircle } from "lucide-react";
+import { TDispatch, TMessage } from "@/types/message";
 
 
-const MessageInput = () => {
+const MessageInput = ({ setMessages }: { setMessages: TDispatch<TMessage[]> }) => {
+
   const [message, setMessage] = useState("");
 
-  const sendMessage = () => {
-    
+  const onSendMessage = () => {
+    if (message.trim()) {
+      setMessages(prev => ([...prev, { role: 'sender', name: 'Roman Reigns', content: message }]));
+    }
+    setMessage("");
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    debugger;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onSendMessage();
+      setMessage("");
+    }
   }
 
   return (
@@ -31,6 +45,7 @@ const MessageInput = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
+          onKeyDown={handleKeyPress}
           className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 px-2"
         />
 
@@ -39,7 +54,13 @@ const MessageInput = () => {
           className="p-2 hover:bg-gray-200 rounded-full transition flex items-center justify-center"
         >
           {message.trim() ? (
-            <ArrowUpCircle className="text-blue-600 transition-all duration-200" size={22} onClick={sendMessage} />
+            <ArrowUpCircle
+              className="text-blue-600 transition-all duration-200"
+              size={22}
+              onClick={onSendMessage}
+              role="button"
+              tabIndex={0}
+            />
 
           ) : (
             <Mic className="text-gray-500 transition-all duration-200" size={20} />

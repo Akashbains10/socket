@@ -3,7 +3,6 @@ const cookie = require("cookie");
 const User = require('../models/user.model');
 const Chat = require('../models/chat.model');
 const Messages = require('../models/message.model');
-const socket = require('../socket');
 
 const authenticateConnection = async (socket, next) => {
     try {
@@ -17,7 +16,6 @@ const authenticateConnection = async (socket, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         const id = decoded?.sub;
         const user = await User.findById(id);
-        console.log(user,'socket user')
         socket.user = user;
         next();
     } catch (error) {

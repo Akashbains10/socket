@@ -52,5 +52,5 @@ const shutdown = async () => {
 process.on('SIGINT', shutdown)
 
 
-// this event in trigger when server is crashed
+// // this event in trigger when server is crashed
 process.on("SIGTERM", shutdown);
