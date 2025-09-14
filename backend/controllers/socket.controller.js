@@ -81,7 +81,7 @@ const sendMessage = async (io, socket, data) => {
     })
 
     await Chat.findByIdAndUpdate(chatId, {
-        latestMessage: newMessage?.id
+        lastMessage: newMessage?.id
     })
 
     if (!!receiver?.socketId) {
@@ -93,6 +93,8 @@ const sendMessage = async (io, socket, data) => {
 
 const getAllMessages = async (io, socket, data) => {
     const { chatId } = data;
+
+    // get all messages for this chat
     const messages = await Messages.find({ chatId })
         .populate('sender')
         .sort({ createdAt: 1 });

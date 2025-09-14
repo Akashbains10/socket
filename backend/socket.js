@@ -18,7 +18,9 @@ const socketController = require('./controllers/socket.controller');
             socket.on('send_message', async (data) => {
                 await socketController.sendMessage(io, socket, data)
             });
-            socket.on('get_messages_list', socketController.getAllMessages);
+            socket.on('get_messages_list', (data)=> {
+                socketController.getAllMessages(io, socket, data)
+            });
             socket.on('disconnect', async () => {
                 await socketController.disconnectUser(socket)
             })

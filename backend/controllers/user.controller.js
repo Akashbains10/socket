@@ -64,6 +64,7 @@ const getAllChats = catchAsync(async (req, res) => {
         matchquery = { users: loggedInUser };
     }
     const chats = await Chat.find(matchquery)
+    .populate('lastMessage')
     .sort({createdAt: -1})
     .skip((numericPage - 1) * numericLimit)
     .limit(numericLimit)

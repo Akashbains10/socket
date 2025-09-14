@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialValue = {
-    count: 0
+    count: 0,
+    selectedChat: ''
 }
 
 export const counterSlice = createSlice({
@@ -13,10 +14,13 @@ export const counterSlice = createSlice({
         },
         decrement: (state) => {
             state.count -= 1;
+        },
+        setSelectedChat: (state, action) => {
+            state.selectedChat = action.payload;
         }
     }
 })
 
-export const { increment, decrement } = counterSlice.actions;
+export const { increment, decrement, setSelectedChat } = counterSlice.actions;
 
 export default counterSlice.reducer;

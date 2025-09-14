@@ -1,5 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useAuth } from './AuthProvider';
 
 interface ISocket {
     socket: Socket | null;
@@ -16,16 +17,18 @@ const SocketProvider = ({
 }: {
     children: React.ReactNode
 }) => {
+    const { user } = useAuth();
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState<boolean>(false);
 
     useEffect(() => {
+        if (!user) return;
         const socketInstance = io('http://localhost:3000', {
             withCredentials: true
         });
 
         socketInstance.on("connect", () => {
-            setIsConnected(socket?.connected ?? false)
+            setIsConnected(true)
             console.log('Socket Connected')
         });
 
@@ -40,14 +43,14 @@ const SocketProvider = ({
         //     console.log("⚠️ Reconnect failed");
         // });
 
-        socketInstance.on("connect_error", (error) => {
-            console.log('Socket Error:', error?.message)
-        });
-
         // this event is triggered when server is shut down or server restarts or user internet drops
         socketInstance.on("disconnect", (reason) => {
             setIsConnected(false);
             console.log("Socket Disconnected:", reason);
+        });
+
+        socketInstance.on("connect_error", (error) => {
+            console.log('Socket Error:', error?.message)
         });
 
         setSocket(socketInstance);
@@ -59,7 +62,7 @@ const SocketProvider = ({
             socketInstance.disconnect();
         }
 
-    }, [])
+    }, [user])
 
     return (
         <SocketContext value={{
@@ -71,4 +74,7 @@ const SocketProvider = ({
     )
 }
 
-export default SocketProvider
+const useSocket = () => useContext(SocketContext);
+
+export { useSocket, SocketProvider }
+

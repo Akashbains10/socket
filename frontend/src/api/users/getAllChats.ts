@@ -1,13 +1,21 @@
-import { useQuery } from '@tanstack/react-query';
+import { QueryClientConfig, useQuery } from '@tanstack/react-query';
 import Axios from '@/utils/axios';
+import { ChatData } from '@/types/chat';
 
-export const getAllChats = () => {
-    return Axios.get('/v1/users/chats');
+export const getAllChats = async (): Promise<ChatData[]> => {
+    const response = await Axios.get('/users/chats');
+    return response?.data;
 };
 
-export const useAllChats = () => {
+
+type QueryType = {
+    config?: QueryClientConfig;
+}
+
+export const useAllChats = ({config}: QueryType = {}) => {
     return useQuery({
         queryKey: ['chats', 'list'],
-        queryFn: getAllChats
+        queryFn: getAllChats,
+        ...config
     });
 };

@@ -1,28 +1,39 @@
 import { Image, Smile, MapPin, Mic } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ArrowUpCircle } from "lucide-react";
 import { TDispatch, TMessage } from "@/types/message";
+import { useSocket } from "@/provider/SocketProvider";
 
 
-const MessageInput = ({ setMessages }: { setMessages: TDispatch<TMessage[]> }) => {
-
+const MessageInputComponent = ({
+  setMessages
+}: {
+  setMessages: TDispatch<TMessage[]>
+}) => {
+  const { socket } = useSocket();
   const [message, setMessage] = useState("");
 
   const onSendMessage = () => {
+    if (!socket) return;
     if (message.trim()) {
       setMessages(prev => ([...prev, { role: 'sender', name: 'Roman Reigns', content: message }]));
     }
+    const payload = {
+      receiverId: '68163fb8148f8e0f1a9a84dd',
+      message: message.trim()
+    }
+    socket.emit('send_message',payload);
     setMessage("");
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    debugger;
     if (e.key === 'Enter') {
       e.preventDefault();
       onSendMessage();
       setMessage("");
     }
   }
+
 
   return (
     <div className="bg-white border-t border-gray-200 px-4 py-3">
@@ -71,4 +82,4 @@ const MessageInput = ({ setMessages }: { setMessages: TDispatch<TMessage[]> }) =
   );
 };
 
-export default MessageInput;
+export const MessageInput = React.memo(MessageInputComponent);
