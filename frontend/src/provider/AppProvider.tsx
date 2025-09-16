@@ -1,7 +1,7 @@
 import { ReactNode, Suspense, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
     QueryClient,
     QueryClientProvider,
@@ -33,7 +33,7 @@ const AppProvider = ({
                             {children}
                         </AuthProvider>
                     </BrowserRouter>
-                    <ReactQueryDevtools />
+                    {/* <ReactQueryDevtools /> */}
                 </QueryClientProvider>
             </ErrorBoundary>
         </Suspense>

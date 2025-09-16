@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken');
+const cookie = require("cookie");
 const User = require('../models/user.model');
 const Chat = require('../models/chat.model');
 const Messages = require('../models/message.model');
-const socket = require('../socket');
 
 const authenticateConnection = async (socket, next) => {
     try {
-        const token = socket.handshake.auth?.token;
+        const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+        const token = cookies['token']
         if (!token) {
             const err = new Error('Token is required')
             return next(err);
@@ -80,7 +81,7 @@ const sendMessage = async (io, socket, data) => {
     })
 
     await Chat.findByIdAndUpdate(chatId, {
-        latestMessage: newMessage?.id
+        lastMessage: newMessage?.id
     })
 
     if (!!receiver?.socketId) {
@@ -92,6 +93,8 @@ const sendMessage = async (io, socket, data) => {
 
 const getAllMessages = async (io, socket, data) => {
     const { chatId } = data;
+
+    // get all messages for this chat
     const messages = await Messages.find({ chatId })
         .populate('sender')
         .sort({ createdAt: 1 });

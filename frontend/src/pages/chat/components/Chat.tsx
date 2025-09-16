@@ -1,7 +1,12 @@
+import ChatLeftSidebar from "./leftsidebar/ChatLeftSidebar"
+import ChatMainContent from "./ChatMainContent"
+
 const Chat = () => {
+
   return (
-    <div>
-      This is main Chat component
+    <div className="h-screen flex">
+      <ChatLeftSidebar />
+      <ChatMainContent />
     </div>
   )
 }

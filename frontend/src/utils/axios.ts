@@ -1,10 +1,9 @@
+import toast from 'react-hot-toast';
 import { BASE_URL } from '@/config/config';
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import toast from 'react-hot-toast';
 
 const successCallback = (response: AxiosResponse) => {
     const {data} = response;
-    console.log(data, 'success callback')
     return data;
 }
 

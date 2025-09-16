@@ -1,3 +1,5 @@
+import { useAuth } from "@/provider/AuthProvider";
+import Spinner from "@/ui/Spinner";
 import React from "react"
 import { Navigate } from "react-router-dom";
 
@@ -6,13 +8,14 @@ const HomeLayout = ({
 }: {
     children: React.ReactNode
 }) => {
+    const {user, isLoading} = useAuth();
 
-    const token = localStorage.getItem('token');
-    if (!token) return <Navigate to="/auth/login" replace />
+    if (isLoading) return <Spinner/>
+
+    if (!user) return <Navigate to="/auth/login" replace />
 
     return (
         <div>
-            Welcome to home layout
             {children}
         </div>
     )

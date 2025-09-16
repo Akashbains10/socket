@@ -3,14 +3,13 @@ import Form from '@/ui/Form';
 import { useHookForm } from '@/hooks/useHookForm';
 import Input from '@/ui/Input';
 import Button from '@/ui/Button';
-// import { useRegisterMutate } from '@/api/auth/registerUser';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import { decrement, increment } from '@/store/counterSlice';
 import { RootState } from '@/store/store';
+import { useState } from 'react';
 import { registerUser } from '@/api/auth/registerUser';
 import toast from 'react-hot-toast';
-import { useState } from 'react';
 
 
 const schema = z.object({
@@ -58,7 +57,6 @@ const Register = () => {
   const { formState, control } = methods;
   const [loading, setLoading] = useState<boolean>(false);
 
-
   // react  redux toolkit example
 
   const count = useSelector((state: RootState) => state.counter.count);
@@ -70,11 +68,11 @@ const Register = () => {
       setLoading(true);
       const res = await registerUser(values);
       if (res?.data) {
+        toast.success('User registered successfully');
         navigate('/auth/login')
-        toast.success('Register successfully')
       }
     } catch (error) {
-      console.log(error);
+      console.log('Error in register', error)
     } finally {
       setLoading(false);
     }
@@ -82,7 +80,7 @@ const Register = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-2xl font-semibold text-gray-800">Welcome back {count}</h3>
+      <h3 className="text-2xl font-semibold text-gray-800">Welcome back</h3>
       <p className="text-gray-500 text-sm font-medium mt-1">Please enter your details to sign up</p>
       <div className="w-full mt-5">
         <Form<FormValues>

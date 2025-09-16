@@ -7,6 +7,7 @@ import { getLogInUser } from '@/api/auth/getLogInUser';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/provider/AuthProvider';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const schema = z.object({
   email: z.string({ required_error: 'Email is required' }).email('Invalid email').min(1, 'Email is required'),
@@ -36,6 +37,7 @@ const inputStyles = {
 }
 
 const Login = () => {
+  const navigate = useNavigate();
   const { methods } = useHookForm(schema);
   const { formState, control } = methods;
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -45,10 +47,13 @@ const Login = () => {
     try {
       setLoading(true)
       const res = await loginFn(values);
-      console.log(res, 'on submit res')
+      if (res) {
+        navigate('/');
+        toast.success('Login successfully')
+      }
     } catch (error) {
       console.log('Error in login form', error)
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
