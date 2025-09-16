@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthProvider';
+import toast from 'react-hot-toast';
 
 interface ISocket {
     socket: Socket | null;
@@ -53,12 +54,18 @@ const SocketProvider = ({
             console.log('Socket Error:', error?.message)
         });
 
+        socketInstance.on('error_message', ({ error }) => {
+            console.error('Socket error message:', error);
+            toast.error(error)
+          });
+
         setSocket(socketInstance);
 
         return () => {
             socketInstance.off("connect");
             socketInstance.off("disconnect");
             socketInstance.off("connect_error");
+            socketInstance.off('error_message');
             socketInstance.disconnect();
         }
 

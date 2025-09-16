@@ -1,21 +1,26 @@
-import { use, useEffect, useRef, useState } from "react"
-import ChatHeader from "./rightContent/ChatHeader"
-import { MessageArea } from "./rightContent/MessageArea"
-import { MessageInput } from "./rightContent/MessageInput"
-import { TMessage } from "@/types/message"
-import { useSocket } from "@/provider/SocketProvider"
-
-const defaultValue = [
-  { role: "sender", name: "Seth Rollins", content: "Hi Roman" },
-  { role: "sender", name: "Seth Rollins", content: "Hey Roman, I just wanted to check in with you today. It’s been a busy week, and I thought it would be nice to catch up for a bit. Work has been hectic, but I’m managing to keep things on track with some extra effort. I’ve also been spending more time at the gym lately, trying to stay consistent with my routine. It really helps me clear my head. How have things been on your side? I’d love to hear what’s new with you and how everything is going in your personal and professional life these days." },
-  { role: "receiver", name: "Roman Reigns", content: "Hey Roman, I just wanted to check in with you today. It’s been a busy week, and I thought it would be nice to catch up for a bit. Work has been hectic, but I’m managing to keep things on track with some extra effort. I’ve also been spending more time at the gym lately, trying to stay consistent with my routine. It really helps me clear my head. How have things been on your side? I’d love to hear what’s new with you and how everything is going in your personal and professional life these days." },
-];
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChatHeader } from "./rightContent/ChatHeader";
+import { useSocket } from "@/provider/SocketProvider";
+import { MessageArea } from "./rightContent/MessageArea";
+import { MessageInput } from "./rightContent/MessageInput";
+import { User } from "@/types/user";
+import { useAuth } from "@/provider/AuthProvider";
+import { TMessage } from "@/types/message";
 
 const ChatMainContent = () => {
-  const { socket, isConnected } = useSocket();
   const ref = useRef<HTMLDivElement>(null);
-  // const [messages, setMessages] = useState<TMessage[]>(new Array(20).fill(defaultValue).flat());
+  const { user } = useAuth();
+  const { socket, isConnected } = useSocket();
+
+  const selectedChat = useSelector((state: RootState) => state.counter.selectedChat);
   const [messages, setMessages] = useState<TMessage[]>([]);
+
+  const receiver: User | undefined = useMemo(() => {
+    if (!selectedChat || !user?._id) return undefined;
+    return selectedChat.users.find((u) => u._id !== user._id);
+  }, [selectedChat, user?.id]);
 
   useEffect(() => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -25,25 +30,32 @@ const ChatMainContent = () => {
     if (!isConnected || !socket) return;
 
     // request messages
-    socket.emit("get_messages_list", { chatId: "68318e21d62b34b78b352776" });
+    socket.emit("get_messages_list", { chatId: selectedChat?._id });
 
     // listen for response
     socket.on("all_messages", (data) => {
-      setMessages(data);
+      if (Array.isArray(data) && data?.length > 0) {
+        const formatMsg = data?.map(({sender, message, createdAt})=> ({
+          role: sender?._id !== user?._id ? 'sender' : 'receiver',
+          message,
+          createdAt
+        }))
+        setMessages(formatMsg);
+      }
     });
 
     return () => {
       socket.off("all_messages"); // cleanup
-  }
-  }, [socket, isConnected]);
+    }
+  }, [socket, isConnected, selectedChat]);
 
 
   return (
     <div className="h-screen flex-1">
       <div className="h-full flex flex-col justify-between">
-        <ChatHeader />
+        <ChatHeader receiver={receiver} />
         <MessageArea bottomRef={ref} messages={messages} />
-        <MessageInput setMessages={setMessages} />
+        <MessageInput receiver={receiver} selectedChat={selectedChat} setMessages={setMessages} />
       </div>
     </div>
   )

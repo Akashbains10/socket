@@ -1,29 +1,40 @@
-import { Image, Smile, MapPin, Mic } from "lucide-react";
 import React, { useState } from "react";
-import { ArrowUpCircle } from "lucide-react";
 import { TDispatch, TMessage } from "@/types/message";
+import { ArrowUpCircle } from "lucide-react";
+import { ChatMessage } from "@/types/chat.message";
 import { useSocket } from "@/provider/SocketProvider";
+import { Image, Smile, MapPin, Mic } from "lucide-react";
+import { InvalidateQueryFilters, useQueryClient } from "@tanstack/react-query";
+import { User } from "@/types/user";
+import { ChatData } from "@/types/chat";
 
 
 const MessageInputComponent = ({
+  receiver,
+  selectedChat,
   setMessages
 }: {
+  receiver: User | undefined
+  selectedChat: ChatData | null
   setMessages: TDispatch<TMessage[]>
 }) => {
   const { socket } = useSocket();
+  const queryClient = useQueryClient();
   const [message, setMessage] = useState("");
 
   const onSendMessage = () => {
     if (!socket) return;
-    if (message.trim()) {
-      setMessages(prev => ([...prev, { role: 'sender', name: 'Roman Reigns', content: message }]));
-    }
+    // if (message.trim()) {
+    //   setMessages(prev => ([...prev, { role: 'sender', name: 'Roman Reigns', content: message }]));
+    // }
     const payload = {
-      receiverId: '68163fb8148f8e0f1a9a84dd',
+      chatId: selectedChat?._id,
+      receiverId: receiver?._id,
       message: message.trim()
     }
-    socket.emit('send_message',payload);
+    socket.emit('send_message', payload);
     setMessage("");
+    queryClient.invalidateQueries(['chats', 'list'] as InvalidateQueryFilters<readonly unknown[]>)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -33,7 +44,6 @@ const MessageInputComponent = ({
       setMessage("");
     }
   }
-
 
   return (
     <div className="bg-white border-t border-gray-200 px-4 py-3">

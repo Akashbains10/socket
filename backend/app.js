@@ -9,8 +9,6 @@ const { errorConverter, errorHandler } = require('./middlewares/error');
 const app = express();
 const FRONTEND_URL = process.env.FRONTEND_URL
 
-console.log(FRONTEND_URL, 'FRONTEND_URL')
-
 const corsOptions = {
     origin: FRONTEND_URL,
     credentials: true,
@@ -21,7 +19,7 @@ app.use(morgan.errorHandler); // Log all failed HTTP requests (status codes >= 4
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json())
-app.use('/v1/auth', authRoutes);
+app.use('/v1/auth', authRoutes);    
 app.use('/v1/users', userRoutes);
 app.use(errorConverter);
 app.use(errorHandler);

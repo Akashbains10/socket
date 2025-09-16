@@ -1,8 +1,14 @@
+import { ChatData } from "@/types/chat";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialValue = {
+type TRedux = {
+    count: number;
+    selectedChat: ChatData | null
+}
+
+const initialValue: TRedux = {
     count: 0,
-    selectedChat: ''
+    selectedChat: null
 }
 
 export const counterSlice = createSlice({

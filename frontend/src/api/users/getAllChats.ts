@@ -16,6 +16,7 @@ export const useAllChats = ({config}: QueryType = {}) => {
     return useQuery({
         queryKey: ['chats', 'list'],
         queryFn: getAllChats,
+        staleTime: 1000 * 60 * 5,
         ...config
     });
 };

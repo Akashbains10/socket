@@ -1,11 +1,17 @@
+import { useAuth } from "@/provider/AuthProvider";
+import { ChatData } from "@/types/chat";
+import { User } from "@/types/user";
 import Avatar from "@mui/material/Avatar";
 import Collapse from "@mui/material/Collapse";
 import { indigo } from "@mui/material/colors";
 import { Search, Phone, Video, MoreVertical } from "lucide-react";
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 
-const ChatHeader = () => {
-  const isOnline = true;
+const ChatHeaderComponent = ({
+  receiver
+}:{
+  receiver: User | undefined
+}) => {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
@@ -20,25 +26,23 @@ const ChatHeader = () => {
             }}
             variant="rounded"
           >
-            A
+            {receiver?.fullName?.charAt(0)?.toUpperCase()}
           </Avatar>
 
           <div>
             <h2 className="text-lg font-semibold text-gray-800">
-              Roman Reigns
+              {receiver?.fullName}
             </h2>
             <div className="flex items-center gap-2">
               <span
-                className={`h-2 w-2 rounded-full ${
-                  isOnline ? "bg-green-500 animate-pulse-status" : "bg-red-500"
-                }`}
+                className={`h-2 w-2 rounded-full ${receiver?.isOnline ? "bg-green-500 animate-pulse-status" : "bg-red-500"
+                  }`}
               ></span>
               <span
-                className={`text-sm ${
-                  isOnline ? "text-green-600" : "text-red-600"
-                }`}
+                className={`text-sm ${receiver?.isOnline ? "text-green-600" : "text-red-600"
+                  }`}
               >
-                {isOnline ? "Online" : "Offline"}
+                {receiver?.isOnline ? "Online" : "Offline"}
               </span>
             </div>
           </div>
@@ -84,4 +88,4 @@ const ChatHeader = () => {
   );
 };
 
-export default ChatHeader;
+export const ChatHeader = React.memo(ChatHeaderComponent);

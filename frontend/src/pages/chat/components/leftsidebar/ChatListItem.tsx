@@ -19,7 +19,7 @@ const ChatListItem = ({
   return (
     <div
       className="px-5 py-4 border-b border-gray-200 hover:bg-[#E6E6FA] transition-colors cursor-pointer"
-      onClick={()=> dispatch(setSelectedChat(_id))}
+      onClick={()=> dispatch(setSelectedChat(props))}
     >
       <div className="flex items-center gap-4">
         <Avatar

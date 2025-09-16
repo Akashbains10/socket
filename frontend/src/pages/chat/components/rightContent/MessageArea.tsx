@@ -1,7 +1,9 @@
+import React from "react";
 import SenderMessage from "./SenderMessage";
 import ReceiverMessage from "./ReceiverMessage";
+import { useAuth } from "@/provider/AuthProvider";
+import { ChatMessage } from "@/types/chat.message";
 import { TMessage } from "@/types/message";
-import React from "react";
 
 const MessageAreaComponent = ({
   bottomRef,
@@ -10,14 +12,16 @@ const MessageAreaComponent = ({
   bottomRef: React.RefObject<HTMLDivElement | null>,
   messages: TMessage[]
 }) => {
+  
+  const {user} = useAuth();
 
   return (
     <div className="h-full p-4 overflow-y-auto">
-      {messages?.map((msg, index) =>
-        msg.role === "sender" ? (
-          <SenderMessage key={index} name={msg.name} content={msg.content} />
+      {messages?.map(({role, message}, index) =>
+        role === 'sender' ? (
+          <SenderMessage key={index}  content={message} />
         ) : (
-          <ReceiverMessage key={index} content={msg.content} />
+          <ReceiverMessage key={index} content={message} />
         )
       )}
       <div ref={bottomRef}></div>

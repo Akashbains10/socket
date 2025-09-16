@@ -67,30 +67,39 @@ const createNewChat = async (socket, receiverId, receiverName) => {
 
 
 const sendMessage = async (io, socket, data) => {
-    let { chatId, receiverId, message } = data;
-    const receiver = await User.findById(receiverId);
-    if (!receiver) throw new Error("Receiver not found");
-    if (!chatId) chatId = await createNewChat(socket, receiver?.id, receiver?.fullName);
-
-    // unreadBy logic is if reciever does not have socket id and its not online then store this user as unreadBy
-    const newMessage = await Messages.create({
+    try {
+      let { chatId, receiverId, message } = data;
+      const receiver = await User.findById(receiverId);
+  
+      if (!receiver) {
+        // Instead of throwing, send an error back to the sender
+        socket.emit('error_message', { error: 'Receiver not found' });
+        return; 
+      }
+  
+      if (!chatId) chatId = await createNewChat(socket, receiver?.id, receiver?.fullName);
+  
+      const newMessage = await Messages.create({
         chatId,
         message,
         sender: socket?.user?.id,
         unreadBy: !!receiver?.socketId && receiver?.isOnline ? [] : [receiver?.id]
-    })
-
-    await Chat.findByIdAndUpdate(chatId, {
+      });
+  
+      await Chat.findByIdAndUpdate(chatId, {
         lastMessage: newMessage?.id
-    })
-
-    if (!!receiver?.socketId) {
+      });
+  
+      if (!!receiver?.socketId) {
         io.to(receiver?.socketId).emit('new_message', data?.newMessage);
-
-        // user will listen to above event to get the latest message
+      }
+  
+    } catch (error) {
+      console.error('Error in sendMessage:', error);
+      socket.emit('error_message', { error: error.message || 'Internal server error' });
     }
-}
-
+  };
+  
 const getAllMessages = async (io, socket, data) => {
     const { chatId } = data;
 
