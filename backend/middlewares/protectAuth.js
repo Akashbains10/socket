@@ -5,8 +5,8 @@ const protectAuth = async (req, res, next) => {
     try {
         const token = req.cookies?.token;
         if (!token) {
-            return res.status(400).json({
-                status: 400,
+            return res.status(401).json({
+                status: 401,
                 message: 'Token is required in cookies'
             });
         }

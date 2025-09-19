@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { TDispatch, TMessage } from "@/types/message";
 import { ArrowUpCircle } from "lucide-react";
-import { ChatMessage } from "@/types/chat.message";
 import { useSocket } from "@/provider/SocketProvider";
 import { Image, Smile, MapPin, Mic } from "lucide-react";
 import { InvalidateQueryFilters, useQueryClient } from "@tanstack/react-query";
@@ -9,18 +8,22 @@ import { User } from "@/types/user";
 import { ChatData } from "@/types/chat";
 
 
+
 const MessageInputComponent = ({
   receiver,
+  isNewChat,
   selectedChat,
   setMessages
 }: {
   receiver: User | undefined
+  isNewChat: boolean
   selectedChat: ChatData | null
   setMessages: TDispatch<TMessage[]>
 }) => {
   const { socket } = useSocket();
   const queryClient = useQueryClient();
   const [message, setMessage] = useState("");
+  const [isEmojiOpen, setIsEmojiOpen] = useState(false);
 
   const onSendMessage = () => {
     if (!socket) return;
@@ -28,7 +31,7 @@ const MessageInputComponent = ({
       setMessages(prev => ([...prev, { role: 'sender', message: message, createdAt: new Date().toISOString() }]));
     }
     const payload = {
-      chatId: selectedChat?._id,
+      chatId: !isNewChat ? selectedChat?._id : undefined,
       receiverId: receiver?._id,
       message: message.trim()
     }
@@ -51,7 +54,7 @@ const MessageInputComponent = ({
 
         {/* Left-side icons */}
         <button className="p-1 hover:bg-gray-200 rounded-full transition">
-          <Smile className="text-gray-500" size={20} />
+          <Smile className="text-gray-500" size={20} onClick={()=> setIsEmojiOpen(!isEmojiOpen)} />
         </button>
         <button className="p-1 hover:bg-gray-200 rounded-full transition">
           <Image className="text-gray-500" size={20} />

@@ -68,38 +68,40 @@ const createNewChat = async (socket, receiverId, receiverName) => {
 
 const sendMessage = async (io, socket, data) => {
     try {
-      let { chatId, receiverId, message } = data;
-      const receiver = await User.findById(receiverId);
-  
-      if (!receiver) {
-        // Instead of throwing, send an error back to the sender
-        socket.emit('error_message', { error: 'Receiver not found' });
-        return; 
-      }
-  
-      if (!chatId) chatId = await createNewChat(socket, receiver?.id, receiver?.fullName);
-  
-      const newMessage = await Messages.create({
-        chatId,
-        message,
-        sender: socket?.user?.id,
-        unreadBy: !!receiver?.socketId && receiver?.isOnline ? [] : [receiver?.id]
-      });
-  
-      await Chat.findByIdAndUpdate(chatId, {
-        lastMessage: newMessage?.id
-      });
-  
-      if (!!receiver?.socketId) {
-        io.to(receiver?.socketId).emit('new_message', data?.newMessage);
-      }
-  
+        console.log('Data received in sendMessage:', data);
+        
+        let { chatId, receiverId, message } = data;
+        const receiver = await User.findById(receiverId);
+
+        if (!receiver) {
+            // Instead of throwing, send an error back to the sender
+            socket.emit('error_message', { error: 'Receiver not found' });
+            return;
+        }
+
+        if (!chatId) chatId = await createNewChat(socket, receiver?.id, receiver?.fullName);
+
+        const newMessage = await Messages.create({
+            chatId,
+            message,
+            sender: socket?.user?.id,
+            unreadBy: !!receiver?.socketId && receiver?.isOnline ? [] : [receiver?.id]
+        });
+
+        await Chat.findByIdAndUpdate(chatId, {
+            lastMessage: newMessage?.id
+        });
+
+        if (!!receiver?.socketId) {
+            io.to(receiver?.socketId).emit('new_message', newMessage);
+        }
+
     } catch (error) {
-      console.error('Error in sendMessage:', error);
-      socket.emit('error_message', { error: error.message || 'Internal server error' });
+        console.error('Error in sendMessage:', error);
+        socket.emit('error_message', { error: error.message || 'Internal server error' });
     }
-  };
-  
+};
+
 const getAllMessages = async (io, socket, data) => {
     const { chatId } = data;
 

@@ -10,8 +10,8 @@ import { useAuth } from "@/provider/AuthProvider";
 import { TMessage } from "@/types/message";
 
 const ChatMainContent = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const ref = useRef<HTMLDivElement>(null);
   const { socket, isConnected } = useSocket();
 
   const selectedChat = useSelector((state: RootState) => state.counter.selectedChat);
@@ -21,8 +21,11 @@ const ChatMainContent = () => {
 
   const receiver: User | undefined = useMemo(() => {
     if (!selectedChat || !user?._id) return undefined;
+
     if (isNewChat) return selectedChat as User;
+
     return selectedChat.users.find((u) => u._id !== user._id);
+
   }, [selectedChat, user?.id, isNewChat]);
 
   useEffect(() => {
@@ -39,7 +42,7 @@ const ChatMainContent = () => {
     socket.on("all_messages", (data) => {
       if (Array.isArray(data) && data?.length > 0) {
         const formatMsg = data?.map(({ sender, message, createdAt }) => ({
-          role: sender?._id !== user?._id ? 'sender' : 'receiver',
+          role: sender?._id !== user?._id ? 'receiver' : 'sender',
           message,
           createdAt
         }))
@@ -47,9 +50,21 @@ const ChatMainContent = () => {
       }
     });
 
+    socket.on("new_message", ({ sender, message, createdAt }) => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: sender?._id !== user?._id ? 'receiver' : 'sender',
+          message,
+          createdAt
+        },
+      ]);
+    });
+
     return () => {
-      socket.off("all_messages"); // cleanup
-    }
+      socket.off("all_messages");
+      socket.off("new_message"); // cleanup listener
+    };
   }, [socket, isConnected, selectedChat]);
 
   if (!receiver && messages?.length === 0) {
@@ -68,7 +83,7 @@ const ChatMainContent = () => {
       <div className="h-full flex flex-col justify-between">
         <ChatHeader receiver={receiver} />
         <MessageArea bottomRef={ref} messages={messages} />
-        <MessageInput receiver={receiver} selectedChat={selectedChat} setMessages={setMessages} />
+        <MessageInput receiver={receiver} selectedChat={selectedChat} isNewChat={isNewChat ?? false} setMessages={setMessages} />
       </div>
     </div>
   )

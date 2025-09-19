@@ -15,9 +15,10 @@ const UsersList = () => {
   } = useAllUsers({ search: "" });
 
   // 👇 Flatten all pages into one array
-  const users = data?.pages.flatMap((page) => page) ?? [];
+  const users = data?.pages.flatMap((page) => page?.data) ?? [];
 
   useEffect(() => {
+    if (!loaderRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0];
@@ -28,9 +29,7 @@ const UsersList = () => {
       { threshold: 0.25 }
     );
 
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
+    observer.observe(loaderRef.current);
 
     return () => {
       if (loaderRef.current) {
@@ -51,12 +50,12 @@ const UsersList = () => {
   return (
     <div className="flex-1 overflow-y-auto">
       {users?.map((chat) => {
-      return (
-        <div key={chat?._id} className="my-2">
-          <UsersListItem {...chat} />
-        </div>
-      )
-})}
+        return (
+          <div key={chat?._id} className="my-2">
+            <UsersListItem {...chat} />
+          </div>
+        )
+      })}
 
       {/* Loader always present for observer */}
       <div ref={loaderRef} className="h-10 flex justify-center items-center text-gray-500">

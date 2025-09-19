@@ -7,16 +7,15 @@ export interface IUserQueryParams {
   limit?: number;
 }
 
-const getAllUsers = async ({ pageParam = 1, queryKey }: any): Promise<IUserList> => {
+const getAllUsers = ({ pageParam = 1, queryKey }: any): Promise<IUserList> => {
   const [, , params] = queryKey;
-  const response = await Axios.get<IUserList>('/users/list', {
+  return Axios.get('/users/list', {
     params: {
       limit: params?.limit ?? 5,
       page: pageParam,
       search: params?.search ?? "",
     },
   });
-  return response.data;
 };
 
 export const useAllUsers = (params?: IUserQueryParams) => {

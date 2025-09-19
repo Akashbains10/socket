@@ -4,34 +4,43 @@ import moment from "moment";
 import { ChatData } from "@/types/chat";
 import { useDispatch } from "react-redux";
 import { setSelectedChat } from "@/store/counterSlice";
+import { useAuth } from "@/provider/AuthProvider";
+import React, { useMemo } from "react";
+import { User } from "@/types/user";
 
 type ChatListItemProps = ChatData;
 
-const ChatListItem = ({
+const ChatListItemComponent = ({
   ...props
 }: ChatListItemProps) => {
 
+  const { user } = useAuth();
   const dispatch = useDispatch();
-  const { _id, chatName, lastMessage, createdAt } = props;
-  
+  const { lastMessage, createdAt, users } = props;
+
   const unreadCount = 3;
+
+  const receiver: User | undefined = useMemo(() => {
+    if (!user?._id) return undefined;
+    return users.find((u) => u._id !== user._id);
+  }, [users, user?._id]);
 
   return (
     <div
       className="px-5 py-4 border-b border-gray-200 hover:bg-[#E6E6FA] transition-colors cursor-pointer"
-      onClick={()=> dispatch(setSelectedChat(props))}
+      onClick={() => dispatch(setSelectedChat(props))}
     >
       <div className="flex items-center gap-4">
         <Avatar
           sx={{ bgcolor: indigo['A200'], width: 48, height: 48 }}
           variant="rounded"
         >
-          {chatName?.charAt(0).toUpperCase()}
+          {receiver?.fullName?.charAt(0).toUpperCase()}
         </Avatar>
 
         <div className="flex flex-col flex-1 overflow-hidden">
           <div className="flex justify-between items-center mb-1">
-            <span className="font-medium">{chatName}</span>
+            <span className="font-medium">{receiver?.fullName}</span>
             <span className="text-xs text-gray-500">{moment(createdAt).fromNow()}</span>
           </div>
           <div className="flex items-center justify-between">
@@ -48,4 +57,4 @@ const ChatListItem = ({
   );
 };
 
-export default ChatListItem;
+export const ChatListItem = React.memo(ChatListItemComponent);

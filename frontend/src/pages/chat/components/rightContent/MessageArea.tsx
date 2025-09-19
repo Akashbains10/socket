@@ -1,7 +1,7 @@
 import React from "react";
-import SenderMessage from "./SenderMessage";
-import ReceiverMessage from "./ReceiverMessage";
 import { TMessage } from "@/types/message";
+import { SenderMessage } from "./SenderMessage";
+import { ReceiverMessage } from "./ReceiverMessage";
 
 const MessageAreaComponent = ({
   bottomRef,
@@ -13,11 +13,11 @@ const MessageAreaComponent = ({
   
   return (
     <div className="h-full p-4 overflow-y-auto">
-      {messages?.map(({role, message}, index) =>
-        role === 'sender' ? (
-          <SenderMessage key={index}  content={message} />
+      {messages?.map((content, index) =>
+        content?.role === 'sender' ? (
+          <SenderMessage key={index} content={content} />
         ) : (
-          <ReceiverMessage key={index} content={message} />
+          <ReceiverMessage key={index} content={content} />
         )
       )}
       <div ref={bottomRef}></div>
