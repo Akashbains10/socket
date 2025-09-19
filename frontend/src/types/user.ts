@@ -19,3 +19,8 @@ export interface IUserList {
   limit: number;
   total: number;
 }
+
+export interface IUsersResponse {
+  pages: IUserList[];
+  pageParams: number[];
+}

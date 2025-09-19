@@ -1,11 +1,9 @@
-import { useAuth } from "@/provider/AuthProvider";
-import { ChatData } from "@/types/chat";
 import { User } from "@/types/user";
 import Avatar from "@mui/material/Avatar";
 import Collapse from "@mui/material/Collapse";
 import { indigo } from "@mui/material/colors";
 import { Search, Phone, Video, MoreVertical } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
 const ChatHeaderComponent = ({
   receiver
@@ -13,6 +11,7 @@ const ChatHeaderComponent = ({
   receiver: User | undefined
 }) => {
   const [showSearch, setShowSearch] = useState(false);
+  
 
   return (
     <div className="bg-gray-100">

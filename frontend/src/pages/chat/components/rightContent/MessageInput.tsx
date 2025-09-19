@@ -24,9 +24,9 @@ const MessageInputComponent = ({
 
   const onSendMessage = () => {
     if (!socket) return;
-    // if (message.trim()) {
-    //   setMessages(prev => ([...prev, { role: 'sender', name: 'Roman Reigns', content: message }]));
-    // }
+    if (message.trim()) {
+      setMessages(prev => ([...prev, { role: 'sender', message: message, createdAt: new Date().toISOString() }]));
+    }
     const payload = {
       chatId: selectedChat?._id,
       receiverId: receiver?._id,

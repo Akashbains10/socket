@@ -2,25 +2,23 @@ import Avatar from "@mui/material/Avatar";
 import { indigo } from "@mui/material/colors";
 import { User } from "@/types/user";
 import moment from 'moment';
+import { useDispatch } from "react-redux";
+import { setSelectedChat } from "@/store/counterSlice";
 
 type ChatListItemProps = User & {
   onClick?: () => void;
   unreadCount?: number;
 };
 
-const UsersListItem = ({
-  fullName,
-  createdAt,
-  phoneNumber,
-  isOnline,
-  unreadCount = 0,
-  onClick
-}: ChatListItemProps) => {
+const UsersListItem = (props: ChatListItemProps) => {
+  const unreadCount = props.unreadCount || 0;
+  const dispatch = useDispatch();
+  const { _id, fullName, phoneNumber, createdAt, isOnline } = props;
 
   return (
     <div
       className="px-5 py-4 border-b border-gray-200 hover:bg-[#E6E6FA] transition-colors cursor-pointer"
-      onClick={onClick}
+      onClick={()=> dispatch(setSelectedChat(props))}
     >
       <div className="flex items-center gap-4">
         <div className="relative inline-block">
@@ -28,7 +26,7 @@ const UsersListItem = ({
             sx={{ bgcolor: indigo['A200'], width: 48, height: 48 }}
             variant="rounded"
           >
-            {fullName.charAt(0)}
+            {fullName.charAt(0).toUpperCase()}
           </Avatar>
 
           {/* Status Dot (scales with Avatar size) */}
@@ -46,7 +44,7 @@ const UsersListItem = ({
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600 truncate">{phoneNumber}</span>
+           {phoneNumber && <span className="text-sm text-gray-600 truncate">{phoneNumber}</span>}
             {unreadCount > 0 && (
               <span className="text-xs text-white font-medium min-w-[20px] h-[20px] bg-green-500 flex items-center justify-center rounded-full">
                 {unreadCount}

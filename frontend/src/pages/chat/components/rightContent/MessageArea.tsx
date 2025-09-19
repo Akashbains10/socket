@@ -1,8 +1,6 @@
 import React from "react";
 import SenderMessage from "./SenderMessage";
 import ReceiverMessage from "./ReceiverMessage";
-import { useAuth } from "@/provider/AuthProvider";
-import { ChatMessage } from "@/types/chat.message";
 import { TMessage } from "@/types/message";
 
 const MessageAreaComponent = ({
@@ -13,8 +11,6 @@ const MessageAreaComponent = ({
   messages: TMessage[]
 }) => {
   
-  const {user} = useAuth();
-
   return (
     <div className="h-full p-4 overflow-y-auto">
       {messages?.map(({role, message}, index) =>

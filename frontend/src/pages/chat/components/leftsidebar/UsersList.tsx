@@ -14,13 +14,8 @@ const UsersList = () => {
     hasNextPage,
   } = useAllUsers({ search: "" });
 
-  console.log(data, 'data of users')
-
   // 👇 Flatten all pages into one array
   const users = data?.pages.flatMap((page) => page) ?? [];
-
-  console.log(users, 'flattened users')
-
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,11 +50,13 @@ const UsersList = () => {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {users?.map((chat) => (
-        <div key={chat._id} className="my-2">
+      {users?.map((chat) => {
+      return (
+        <div key={chat?._id} className="my-2">
           <UsersListItem {...chat} />
         </div>
-      ))}
+      )
+})}
 
       {/* Loader always present for observer */}
       <div ref={loaderRef} className="h-10 flex justify-center items-center text-gray-500">

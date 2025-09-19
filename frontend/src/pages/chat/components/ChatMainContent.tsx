@@ -17,10 +17,13 @@ const ChatMainContent = () => {
   const selectedChat = useSelector((state: RootState) => state.counter.selectedChat);
   const [messages, setMessages] = useState<TMessage[]>([]);
 
+  const isNewChat = selectedChat && !("users" in selectedChat);
+
   const receiver: User | undefined = useMemo(() => {
     if (!selectedChat || !user?._id) return undefined;
+    if (isNewChat) return selectedChat as User;
     return selectedChat.users.find((u) => u._id !== user._id);
-  }, [selectedChat, user?.id]);
+  }, [selectedChat, user?.id, isNewChat]);
 
   useEffect(() => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,7 +38,7 @@ const ChatMainContent = () => {
     // listen for response
     socket.on("all_messages", (data) => {
       if (Array.isArray(data) && data?.length > 0) {
-        const formatMsg = data?.map(({sender, message, createdAt})=> ({
+        const formatMsg = data?.map(({ sender, message, createdAt }) => ({
           role: sender?._id !== user?._id ? 'sender' : 'receiver',
           message,
           createdAt
@@ -48,6 +51,16 @@ const ChatMainContent = () => {
       socket.off("all_messages"); // cleanup
     }
   }, [socket, isConnected, selectedChat]);
+
+  if (!receiver && messages?.length === 0) {
+    return (
+      <div className="flex-1">
+        <div className="h-full flex items-center justify-center">
+          <span className="text-gray-500 text-2xl font-semibold"> No messages yet...</span>
+        </div>
+      </div>
+    );
+  }
 
 
   return (

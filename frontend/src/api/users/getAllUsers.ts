@@ -1,24 +1,15 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import Axios from '@/utils/axios';
-import { User } from '@/types/user';
-
-export interface IUserApiResponse {
-  status: number;
-  message: string;
-  data: User[];
-  page: number;
-  limit: number;
-  total: number;
-}
+import { IUserList } from '@/types/user';
 
 export interface IUserQueryParams {
   search?: string;
   limit?: number;
 }
 
-const getAllUsers = async ({ pageParam = 1, queryKey }: any): Promise<IUserApiResponse> => {
+const getAllUsers = async ({ pageParam = 1, queryKey }: any): Promise<IUserList> => {
   const [, , params] = queryKey;
-  const response = await Axios.get('/users/list', {
+  const response = await Axios.get<IUserList>('/users/list', {
     params: {
       limit: params?.limit ?? 5,
       page: pageParam,
@@ -29,7 +20,7 @@ const getAllUsers = async ({ pageParam = 1, queryKey }: any): Promise<IUserApiRe
 };
 
 export const useAllUsers = (params?: IUserQueryParams) => {
-  return useInfiniteQuery<IUserApiResponse>({
+  return useInfiniteQuery<IUserList>({
     queryKey: ['users', 'list', params],
     queryFn: getAllUsers,
     getNextPageParam: (lastPage) => {
