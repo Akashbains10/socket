@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { TDispatch, TMessage } from "@/types/message";
 import { ArrowUpCircle } from "lucide-react";
 import { useSocket } from "@/provider/SocketProvider";
@@ -6,8 +6,8 @@ import { Image, Smile, MapPin, Mic } from "lucide-react";
 import { InvalidateQueryFilters, useQueryClient } from "@tanstack/react-query";
 import { User } from "@/types/user";
 import { ChatData } from "@/types/chat";
-
-
+import { useMediaUpload } from "@/hooks/useMediaUpload";
+import { MediaPreviewList } from "./MediaPreviewList";
 
 const MessageInputComponent = ({
   receiver,
@@ -21,10 +21,13 @@ const MessageInputComponent = ({
   setMessages: TDispatch<TMessage[]>
 }) => {
   const { socket } = useSocket();
+  const { files, handleChange, fileAndPreviewSetter, previews, clear } = useMediaUpload();
   const audioChunksRef = useRef<Blob[]>([]);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const queryClient = useQueryClient();
+
   const [message, setMessage] = useState("");
+  const [isDragOver, setIsDragOver] = useState(false)
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
@@ -52,10 +55,25 @@ const MessageInputComponent = ({
     }
   }
 
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+  }, [])
+
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault()
+    const files = event.dataTransfer.files;
+    const filesArr = Array.from(files);
+    if (filesArr?.length > 0) fileAndPreviewSetter(filesArr);
+  }
+
   const startRecording = async () => {
-    debugger;
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    console.log(stream, 'stream value')
     mediaRecorderRef.current = new MediaRecorder(stream);
     audioChunksRef.current = [];
 
@@ -73,7 +91,14 @@ const MessageInputComponent = ({
   };
 
   return (
-    <div className="bg-white border-t border-gray-200 px-4 py-3">
+    <div
+      onDrop={handleDrop}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      className="bg-white border-t border-gray-200 px-4 py-3"
+    >
+      <MediaPreviewList previews={previews} files={files} onRemove={clear} />
+
       <div className="flex items-center gap-3 bg-gray-100 rounded-full px-4 py-2 shadow-sm">
 
         {/* Left-side icons */}
@@ -98,6 +123,8 @@ const MessageInputComponent = ({
         />
 
         {/* Right-side action (Mic or Send) */}
+        <input type="file" multiple id="upload-input" onChange={handleChange} />
+
         <button
           className="p-2 hover:bg-gray-200 rounded-full transition flex items-center justify-center"
         >
@@ -109,12 +136,10 @@ const MessageInputComponent = ({
               role="button"
               tabIndex={0}
             />
-
           ) : (
             <Mic
               size={20}
               className="text-gray-500 transition-all duration-200"
-              // onClick={()=>console.log('this event is triggered')}
               onClick={startRecording}
             />
           )}
