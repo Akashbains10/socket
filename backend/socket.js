@@ -2,9 +2,10 @@ const { Server } = require('socket.io');
 const socketController = require('./controllers/socket.controller');
 
     module.exports = (server) => {
+        const frontendUrl = process.env.FRONTEND_URL;
         const io = new Server(server, {
             cors: {
-                origin: 'http://localhost:5173',
+                origin: frontendUrl,
                 methods: ['GET', 'POST'],
                 credentials: true
             }

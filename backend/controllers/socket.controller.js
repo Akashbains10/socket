@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const cookie = require("cookie");
 const User = require('../models/user.model');
-const Chat = require('../models/chat.model');
+const Chat = require('../models/chat.model');   
 const Messages = require('../models/message.model');
 
 const authenticateConnection = async (socket, next) => {

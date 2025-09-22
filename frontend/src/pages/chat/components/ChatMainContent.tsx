@@ -8,9 +8,11 @@ import { MessageInput } from "./rightContent/MessageInput";
 import { User } from "@/types/user";
 import { useAuth } from "@/provider/AuthProvider";
 import { TMessage } from "@/types/message";
+import { InvalidateQueryFilters, useQueryClient } from "@tanstack/react-query";
 
 const ChatMainContent = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const ref = useRef<HTMLDivElement>(null);
   const { socket, isConnected } = useSocket();
 
@@ -51,6 +53,7 @@ const ChatMainContent = () => {
     });
 
     socket.on("new_message", ({ sender, message, createdAt }) => {
+    queryClient.invalidateQueries(['chats', 'list'] as InvalidateQueryFilters<readonly unknown[]>)
       setMessages((prev) => [
         ...prev,
         {

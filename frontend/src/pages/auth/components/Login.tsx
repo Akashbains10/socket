@@ -3,7 +3,6 @@ import Form from '@/ui/Form';
 import { useHookForm } from '@/hooks/useHookForm';
 import Input from '@/ui/Input';
 import Button from '@/ui/Button';
-import { getLogInUser } from '@/api/auth/getLogInUser';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/provider/AuthProvider';
 import { useState } from 'react';
@@ -41,7 +40,7 @@ const Login = () => {
   const { methods } = useHookForm(schema);
   const { formState, control } = methods;
   const [isLoading, setLoading] = useState<boolean>(false);
-  const { loginFn, logoutFn } = useAuth();
+  const { loginFn } = useAuth();
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
@@ -56,15 +55,6 @@ const Login = () => {
     } finally {
       setLoading(false)
     }
-  }
-
-  const testApi = async () => {
-    await getLogInUser();
-  }
-
-  const logoutUser = async () => {
-    await logoutFn();
-    console.log('Logout successfully')
   }
 
   return (
@@ -101,20 +91,6 @@ const Login = () => {
               loading={isLoading}
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
-            </Button>
-          </div>
-          <div className="my-5">
-            <Button
-              onClick={testApi}
-            >
-              Test
-            </Button>
-          </div>
-          <div className="my-5">
-            <Button
-              onClick={logoutUser}
-            >
-              Logout
             </Button>
           </div>
         </Form>

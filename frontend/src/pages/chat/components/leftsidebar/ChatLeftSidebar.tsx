@@ -3,15 +3,25 @@ import { MessageSquarePlus, Settings, LogOut } from "lucide-react";
 import SearchBar from "./SearchBar";
 import SidebarFooter from "./SidebarFooter";
 import SidebarHeader from "./SidebarHeader";
-import {ChatList} from "./ChatList";
+import { ChatList } from "./ChatList";
 import UsersList from "./UsersList";
 import { useAllChats } from "@/api/users/getAllChats";
+import { useAuth } from "@/provider/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 
 const ChatLeftSidebar = () => {
+
+  const navigate = useNavigate();
+  const { logoutFn } = useAuth();
   const { data: chats } = useAllChats();
   const [search, setSearch] = useState<string>("");
   const [isNewChat, setIsNewChat] = useState<boolean>(false);
+
+  const handleLogout = () => {
+    logoutFn();
+    navigate('/auth/login')
+  }
 
   return (
     <div className="w-1/4 bg-gray-100 flex flex-col border-gray-300 shadow-md">
@@ -32,7 +42,7 @@ const ChatLeftSidebar = () => {
       <SidebarFooter
         actions={[
           { label: "Settings", icon: <Settings size={18} />, onClick: () => console.log("Settings clicked") },
-          { label: "Logout", icon: <LogOut size={18} />, onClick: () => console.log("Logout clicked"), color: "text-red-700", hoverColor: "bg-red-200" }
+          { label: "Logout", icon: <LogOut size={18} />, onClick: handleLogout, color: "text-red-700", hoverColor: "bg-red-200" }
         ]}
       />
     </div>

@@ -4,9 +4,6 @@ import { useHookForm } from '@/hooks/useHookForm';
 import Input from '@/ui/Input';
 import Button from '@/ui/Button';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux'
-import { decrement, increment } from '@/store/counterSlice';
-import { RootState } from '@/store/store';
 import { useState } from 'react';
 import { registerUser } from '@/api/auth/registerUser';
 import toast from 'react-hot-toast';
@@ -56,12 +53,6 @@ const Register = () => {
   const { methods } = useHookForm(schema);
   const { formState, control } = methods;
   const [loading, setLoading] = useState<boolean>(false);
-
-  // react  redux toolkit example
-
-  const count = useSelector((state: RootState) => state.counter.count);
-  const dispatch = useDispatch();
-
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
@@ -132,22 +123,6 @@ const Register = () => {
               loading={loading}
             >
               {loading ? 'Signing up...' : 'Sign up'}
-            </Button>
-          </div>
-          <div className="my-5">
-            <Button
-              type="submit"
-              onClick={() => dispatch(increment())}
-            >
-              Increment (+)
-            </Button>
-          </div>
-          <div className="my-5">
-            <Button
-              type="submit"
-              onClick={() => dispatch(decrement())}
-            >
-              Decrement (-)
             </Button>
           </div>
         </Form>
