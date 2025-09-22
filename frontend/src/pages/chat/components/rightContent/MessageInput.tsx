@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { TDispatch, TMessage } from "@/types/message";
 import { ArrowUpCircle } from "lucide-react";
 import { useSocket } from "@/provider/SocketProvider";
@@ -21,9 +21,13 @@ const MessageInputComponent = ({
   setMessages: TDispatch<TMessage[]>
 }) => {
   const { socket } = useSocket();
+  const audioChunksRef = useRef<Blob[]>([]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const queryClient = useQueryClient();
   const [message, setMessage] = useState("");
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
 
   const onSendMessage = () => {
     if (!socket) return;
@@ -48,13 +52,33 @@ const MessageInputComponent = ({
     }
   }
 
+  const startRecording = async () => {
+    debugger;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    console.log(stream, 'stream value')
+    mediaRecorderRef.current = new MediaRecorder(stream);
+    audioChunksRef.current = [];
+
+    mediaRecorderRef.current.ondataavailable = event => {
+      audioChunksRef.current.push(event.data);
+    };
+
+    // mediaRecorderRef.current.onstop = () => {
+    //   const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+    //   setAudioBlob(audioBlob);
+    // };
+
+    mediaRecorderRef.current.start();
+    setIsRecording(true);
+  };
+
   return (
     <div className="bg-white border-t border-gray-200 px-4 py-3">
       <div className="flex items-center gap-3 bg-gray-100 rounded-full px-4 py-2 shadow-sm">
 
         {/* Left-side icons */}
         <button className="p-1 hover:bg-gray-200 rounded-full transition">
-          <Smile className="text-gray-500" size={20} onClick={()=> setIsEmojiOpen(!isEmojiOpen)} />
+          <Smile className="text-gray-500" size={20} onClick={() => setIsEmojiOpen(!isEmojiOpen)} />
         </button>
         <button className="p-1 hover:bg-gray-200 rounded-full transition">
           <Image className="text-gray-500" size={20} />
@@ -87,7 +111,12 @@ const MessageInputComponent = ({
             />
 
           ) : (
-            <Mic className="text-gray-500 transition-all duration-200" size={20} />
+            <Mic
+              size={20}
+              className="text-gray-500 transition-all duration-200"
+              // onClick={()=>console.log('this event is triggered')}
+              onClick={startRecording}
+            />
           )}
         </button>
       </div>
