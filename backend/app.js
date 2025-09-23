@@ -18,8 +18,9 @@ app.use(morgan.successHandler); // Log all successful HTTP requests (status code
 app.use(morgan.errorHandler); // Log all failed HTTP requests (status codes >= 400), including error messages
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.use(express.json())
-app.use('/v1/auth', authRoutes);    
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+app.use('/v1/auth', authRoutes);
 app.use('/v1/users', userRoutes);
 app.use(errorConverter);
 app.use(errorHandler);

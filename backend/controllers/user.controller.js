@@ -2,6 +2,8 @@ const Chat = require("../models/chat.model");
 const User = require("../models/user.model");
 const catchAsync = require("../utils/catchAsync");
 
+const BASE_URL = process.env.BACKEND_URL;
+
 // show list of users with search filter and pagination
 const getListofUsers = catchAsync(async (req, res) => {
     const loggedInUser = req.user;
@@ -82,8 +84,28 @@ const getAllChats = catchAsync(async (req, res) => {
     })
 })
 
+const uploadMedia = catchAsync(async (req, res) => {
+  const files = req.files;
+
+  if (!files || files.length === 0) {
+    return res.status(400).json({
+      status: 400,
+      message: 'No files were uploaded.',
+    });
+  }
+
+  const fileNames = files.map(file => `${BASE_URL}/uploads/${file.filename}`); 
+
+  return res.status(200).json({
+    status: 200,
+    message: 'Files uploaded successfully.',
+    data: fileNames,
+  });
+});
+
 
 module.exports = {
     getListofUsers,
-    getAllChats
+    getAllChats,
+    uploadMedia
 }

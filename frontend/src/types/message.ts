@@ -3,6 +3,7 @@ import React from "react";
 export type TMessage = {
     role: string
     message: string;
+    media?: string[];
     createdAt: string;
 }
 

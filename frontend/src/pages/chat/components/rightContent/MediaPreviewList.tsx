@@ -1,5 +1,5 @@
-import React from "react";
-import { FileText, Video, File as FileIcon } from "lucide-react"; // or use custom icons
+import React, { useEffect, useState } from "react";
+import { FileText, File as FileIcon } from "lucide-react";
 
 interface MediaPreviewListProps {
   previews: string[];
@@ -12,11 +12,56 @@ export const MediaPreviewList: React.FC<MediaPreviewListProps> = ({
   onRemove,
   files = [],
 }) => {
-  if (previews.length === 0) return null;
+  const [videoThumbnails, setVideoThumbnails] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    files.forEach((file, index) => {
+      if (file.type.startsWith("video/") && !videoThumbnails[index]) {
+        const video = document.createElement("video");
+        video.src = URL.createObjectURL(file);
+        video.crossOrigin = "anonymous";
+        video.preload = "metadata";
+        video.muted = true;
+        video.playsInline = true;
+
+        const captureThumbnail = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageUrl = canvas.toDataURL("image/png");
+            setVideoThumbnails((prev) => ({
+              ...prev,
+              [index]: imageUrl,
+            }));
+          }
+        };
+
+        const handleLoadedData = () => {
+          // Ensure we seek to the beginning
+          video.currentTime = 0;
+        };
+
+        const handleSeeked = () => {
+          captureThumbnail();
+          URL.revokeObjectURL(video.src);
+        };
+
+        video.addEventListener("loadeddata", handleLoadedData);
+        video.addEventListener("seeked", handleSeeked);
+
+        return () => {
+          video.removeEventListener("loadeddata", handleLoadedData);
+          video.removeEventListener("seeked", handleSeeked);
+        };
+      }
+    });
+  }, [files, videoThumbnails]);
 
   const renderPreview = (preview: string, index: number) => {
     const file = files[index];
-
     const fileType = file?.type || "";
 
     if (fileType.startsWith("image/")) {
@@ -30,9 +75,21 @@ export const MediaPreviewList: React.FC<MediaPreviewListProps> = ({
     }
 
     if (fileType.startsWith("video/")) {
+      const thumb = videoThumbnails[index];
+      if (thumb) {
+        return (
+          <img
+            src={thumb}
+            alt={`Video-thumbnail-${index}`}
+            className="w-full h-full object-cover"
+          />
+        );
+      }
+
+      // fallback while loading
       return (
-        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-700">
-          <Video size={40} />
+        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-xs">
+          Loading...
         </div>
       );
     }
@@ -47,7 +104,8 @@ export const MediaPreviewList: React.FC<MediaPreviewListProps> = ({
 
     if (
       fileType === "application/msword" ||
-      fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      fileType ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
       return (
         <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-700">
@@ -64,7 +122,7 @@ export const MediaPreviewList: React.FC<MediaPreviewListProps> = ({
   };
 
   return (
-    <div className="flex flex-row gap-3 flex-wrap mb-3">
+    <div className="flex flex-row gap-3 flex-wrap">
       {previews.map((preview, index) => (
         <div
           key={`media-${index}`}

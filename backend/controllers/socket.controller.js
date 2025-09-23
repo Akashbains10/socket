@@ -70,7 +70,7 @@ const sendMessage = async (io, socket, data) => {
     try {
         console.log('Data received in sendMessage:', data);
         
-        let { chatId, receiverId, message } = data;
+        let { chatId, receiverId, message,media } = data;
         const receiver = await User.findById(receiverId);
 
         if (!receiver) {
@@ -84,6 +84,7 @@ const sendMessage = async (io, socket, data) => {
         const newMessage = await Messages.create({
             chatId,
             message,
+            media,
             sender: socket?.user?.id,
             unreadBy: !!receiver?.socketId && receiver?.isOnline ? [] : [receiver?.id]
         });

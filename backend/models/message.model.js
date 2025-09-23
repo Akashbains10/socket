@@ -9,6 +9,9 @@ const messageSchema = new mongoose.Schema(
         message: {
             type: String
         },
+        media:{
+            type: [String]
+        },
         sender: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'User'

@@ -43,9 +43,10 @@ const ChatMainContent = () => {
     // listen for response
     socket.on("all_messages", (data) => {
       if (Array.isArray(data) && data?.length > 0) {
-        const formatMsg = data?.map(({ sender, message, createdAt }) => ({
+        const formatMsg = data?.map(({ sender, message, createdAt, media }) => ({
           role: sender?._id !== user?._id ? 'receiver' : 'sender',
           message,
+          media,
           createdAt
         }))
         setMessages(formatMsg);
@@ -63,6 +64,7 @@ const ChatMainContent = () => {
         },
       ]);
     });
+
 
     return () => {
       socket.off("all_messages");
