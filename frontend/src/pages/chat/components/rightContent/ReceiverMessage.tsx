@@ -10,7 +10,6 @@ const ReceiverMessageComponent = ({ content }: { content: TMessage }) => {
                 <Avatar sx={{ width: 36, height: 36 }} />
                 <div className="bg-white shadow-sm p-3 rounded-lg rounded-bl-none max-w-md">
                     <p className="text-sm text-gray-800">{content?.message}</p>
-                    {/* <span className="text-xs text-gray-500">{name}</span> */}
 
                     {/* Media attachments */}
                     {content.media?.map((url, index) => {
